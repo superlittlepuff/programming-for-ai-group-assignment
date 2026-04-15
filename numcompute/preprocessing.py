@@ -40,8 +40,8 @@ class StandardScaler:
         if X.shape[1] != self.n_features_in_:
             raise ValueError("Input feature count does not match fitted data.")
 
-        X_out = (X - self.mean_) / self.scale_
         self.scale_[self.scale_ == 0] = 1.0
+        X_out = (X - self.mean_) / self.scale_
 
         return X_out
 
@@ -162,9 +162,9 @@ class SimpleImputer:
     def __init__(self, strategy="constant", fill_value=0):
         self.strategy = strategy
         self.fill_value = fill_value
-        self.imputer_ = None
         self.n_features_in_ = None
         self._is_fitted = False
+        self.statistics_ = None
 
     def fit(self, X):
         X = np.asarray(X, dtype=float)
@@ -182,13 +182,22 @@ class SimpleImputer:
 
     def transform(self, X):
         if not self._is_fitted:
-            raise ValueError("SimpleInputer has not been fitted yet.")
-            # 2. 转数组
-            # 3. 输入检查
-            # 4. copy 一份
-            # 5. 找到缺失值位置
-            # 6. 替换成 fill_value
-            # 7. 返回结果
+            raise ValueError("SimpleImputer has not been fitted yet.")
+
+        X = np.asarray(X, dtype=float)
+
+        if X.ndim != 2:
+            raise ValueError("X must be a 2D array.")
+        if X.size == 0:
+            raise ValueError("Input array is empty.")
+        if X.shape[1] != self.n_features_in_:
+            raise ValueError("Input feature count does not match fitted data.")
+
+        X_out = X.copy()
+
+        mask = np.isnan(X_out)
+        X_out[mask] = self.statistics_
+
         return X_out
 
     def fit_transform(self, X):
