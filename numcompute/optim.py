@@ -1,6 +1,9 @@
 import numpy as np
 
 def grad(f, x, h=1e-5, method='central'):
+    if method not in ('central', 'forward'):
+        raise ValueError("Gradient method should be central or forward")
+    
     x = np.asarray(x,dtype=float)
     gradi = np.zeros(x.shape)
     
@@ -18,6 +21,10 @@ def grad(f, x, h=1e-5, method='central'):
 
 def jacobian(F, x, h=1e-5):
     x = np.asarray(x, dtype=float)
+    
+    Fx = np.array(F(x))
+    if Fx.ndim == 0:
+        raise ValueError("You should use grad for scalar")
     
     jaco = np.zeros((F(x).size,x.size))    
     for i in range(x.size):

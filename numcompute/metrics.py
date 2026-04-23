@@ -1,22 +1,19 @@
 import numpy as np
 
 def accuracy(y_true, y_pred)->float:
-    """
-    Accuracy = TP+TN/(TP+TN+FP+FN)
-    
-    Exception:
-    1.Input should be array
-    2.The number of two arrays should be the same
-    """
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
+    
+    if y_true.shape != y_pred.shape:
+        raise ValueError("The size of two arrays are not the same")
+    
     return np.mean(y_pred == y_true)
 
 def precision(y_true, y_pred)->float:
     """
     Precision = TP/(TP+FP)
-    Zero presents Positive
-    One presents Negtive
+    Zero presents Negative
+    One presents Positive
     
     Exception:
     1. TP + FP == 0
@@ -26,8 +23,14 @@ def precision(y_true, y_pred)->float:
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
     
+    if y_true.shape != y_pred.shape:
+        raise ValueError("The shape of two arrays are not the same")
+    
     TP = ((y_true == 1) & (y_pred == 1)).sum()
     FP = ((y_true == 0) & (y_pred == 1)).sum()
+    
+    if TP + FP == 0:
+        return 0.0
     
     prec = float(TP/(TP + FP))
     return prec
@@ -35,8 +38,8 @@ def precision(y_true, y_pred)->float:
 def recall(y_true, y_pred)->float:
     """
     Recall = TP/(TP+FN)
-    Zero presents Positive
-    One presents Negtive
+    Zero presents Negative
+    One presents Positive
     
     Exception:
     1. TP + FN == 0
@@ -45,9 +48,15 @@ def recall(y_true, y_pred)->float:
     """
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
-
+    
+    if y_true.shape != y_pred.shape:
+        raise ValueError("The shape of two arrays are not the same")
+    
     TP = ((y_true == 1) & (y_pred == 1)).sum()
     FN = ((y_true == 1) & (y_pred == 0)).sum()
+    
+    if TP + FN == 0:
+        return 0.0
     
     recall = float(TP/(TP+FN))
     
@@ -64,6 +73,9 @@ def f1(y_true, y_pred)->float:
     """
     prec = precision(y_true=y_true, y_pred=y_pred)
     rec = recall(y_true=y_true, y_pred=y_pred)
+    
+    if prec + rec == 0:
+        return 0.0
     
     f1_score = 2 * (prec*rec) / (prec+rec)
     
@@ -83,6 +95,9 @@ def confusion_matrix(y_true, y_pred)->np.array:
     """
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
+    
+    if y_true.shape != y_pred.shape:
+        raise ValueError("The shape of two arrays are not the same")
     
     TP = ((y_true == 1) & (y_pred == 1)).sum()
     FN = ((y_true == 1) & (y_pred == 0)).sum()
@@ -107,15 +122,55 @@ def mse(y_true, y_pred)->float:
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
 
-    mse_score = np.square(np.subtract(y_true - y_pred)).mean()
+    if y_true.shape != y_pred.shape:
+        raise ValueError("The shape of two arrays are not the same")
+
+    mse_score = np.mean(np.square(y_true - y_pred))
     
     return mse_score
     
-def roc_curve():
-    pass
+def roc_curve(y_true, y_score):
+    """
+    TPR = TP/(TP+FN)
+    FPR = FP/(TN+FP)
+    """
+    y_true = np.asarray(y_true)
+    y_score = np.asarray(y_score)
+    
+    if y_true.shape != y_score.shape:
+        raise ValueError("The shape of two arrays are not the same")
+    
+    thresholds = np.sort(np.unique(y_score))[::-1]
+    
+    total_pos = (y_true == 1).sum()
+    total_neg = (y_true == 0).sum()
+    
+    tpr = [0.0]
+    fpr = [0.0]
+    
+    for tres in thresholds:
+        y_pred = (y_score >= tres).astype(int)
+        
+        TP = ((y_true == 1) & (y_pred == 1)).sum()
+        FP = ((y_true == 0) & (y_pred == 1)).sum()
+        
+        if total_pos > 0:
+            tpr.append(TP / total_pos)
+        else:
+            tpr.append(0.0)
+        if total_neg > 0:
+            fpr.append(FP / total_neg)
+        else:
+            fpr.append(0.0)
 
-def auc():
-    pass
+    return np.array(tpr), np.array(fpr)
 
+def auc(tpr, fpr):
+    fpr_idx = np.argsort(fpr)
+    fpr_sorted = fpr[fpr_idx]
+    tpr_sorted = tpr[fpr_idx]
+    
+    auc_score = np.trapezoid(tpr_sorted, fpr_sorted)
+    return auc_score
 
 
