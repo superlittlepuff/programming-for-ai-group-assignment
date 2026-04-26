@@ -1,8 +1,22 @@
 import numpy as np
 
 def accuracy(y_true, y_pred)->float:
-    y_true = np.array(y_true)
-    y_pred = np.array(y_pred)
+    """
+    Compute the accuracy of the predictions.
+
+    Args:
+        y_true (array): The true labels.
+        y_pred (array): The predictive labels.
+
+    Raises:
+        ValueError: if the shape of two arrays are not the same
+
+    Returns:
+        float: the accuracy of the predictions.
+    """
+    
+    y_true = np.array(y_true, dtype=float)
+    y_pred = np.array(y_pred, dtype=float)
     
     if y_true.shape != y_pred.shape:
         raise ValueError("The size of two arrays are not the same")
@@ -11,15 +25,20 @@ def accuracy(y_true, y_pred)->float:
 
 def precision(y_true, y_pred)->float:
     """
+    Compute the precision of the predictions.
     Precision = TP/(TP+FP)
-    Zero presents Negative
-    One presents Positive
-    
-    Exception:
-    1. TP + FP == 0
-    2.Input should be array
-    3.The number of two arrays should be the same
+
+    Args:
+        y_true (array): The true labels.
+        y_pred (array): The predictive labels.
+
+    Raises:
+        ValueError: if the shape of two arrays are not the same
+
+    Returns:
+        float: the precision of the predictions.
     """
+    
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
     
@@ -37,15 +56,20 @@ def precision(y_true, y_pred)->float:
 
 def recall(y_true, y_pred)->float:
     """
+    Compute the recall of the predictions.
     Recall = TP/(TP+FN)
-    Zero presents Negative
-    One presents Positive
-    
-    Exception:
-    1. TP + FN == 0
-    2.Input should be array
-    3.The number of two arrays should be the same
+
+    Args:
+        y_true (array): The true labels.
+        y_pred (array): The predictive labels.
+
+    Raises:
+        ValueError: if the shape of two arrays are not the same
+
+    Returns:
+        float: the recall of the predictions.
     """
+   
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
     
@@ -64,12 +88,15 @@ def recall(y_true, y_pred)->float:
 
 def f1(y_true, y_pred)->float:
     """
+    Compute the F1 score of the predictions.
     F1 = 2 * Precision * Recall/(Precision + Recall)
-    
-    Exception:
-    1.Precision + Recall == 0
-    2.Input should be array
-    3.The number of two arrays should be the same
+
+    Args:
+        y_true (array): The true labels.
+        y_pred (array): The predictive labels.
+
+    Returns:
+        float: the F1 score of the predictions.
     """
     prec = precision(y_true=y_true, y_pred=y_pred)
     rec = recall(y_true=y_true, y_pred=y_pred)
@@ -82,17 +109,22 @@ def f1(y_true, y_pred)->float:
     return f1_score
     
 def confusion_matrix(y_true, y_pred)->np.array:
-    """_summary_
+    """
+    Compute the confusion matrix of the predictions.
 
     Args:
-        y_true (_array_): _description_
-        y_pred (_array_): _description_
+        y_true (array): The true labels.
+        y_pred (array): The predictive labels.
+
+    Raises:
+        ValueError: if the shape of two arrays are not the same
 
     Returns:
-        np.array: 
-        [[TP, FN],
-        [FP, TN]]
+        np.array: the confusion matrix of the predictions.
+            [[TP, FN],
+            [FP, TN]]
     """
+    
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
     
@@ -109,18 +141,22 @@ def confusion_matrix(y_true, y_pred)->np.array:
     return confu_mat
 
 def mse(y_true, y_pred)->float:
-    """_summary_
+    """
+    Compute the mean squared error of the predictions.
 
     Args:
-        y_true (_type_): _description_
-        y_pred (_type_): _description_
+        y_true (array): The true labels.
+        y_pred (array): The predictive labels.
+
+    Raises:
+        ValueError: if the shape of two arrays are not the same
 
     Returns:
-        float: _description_
+        float: the mean squared error of the predictions.
     """
     
-    y_true = np.array(y_true)
-    y_pred = np.array(y_pred)
+    y_true = np.array(y_true, dtype=float)
+    y_pred = np.array(y_pred, dtype=float)
 
     if y_true.shape != y_pred.shape:
         raise ValueError("The shape of two arrays are not the same")
@@ -131,11 +167,22 @@ def mse(y_true, y_pred)->float:
     
 def roc_curve(y_true, y_score):
     """
+    Compute the true positive rate and false positive rate of the predictions based on different thresholds.
     TPR = TP/(TP+FN)
     FPR = FP/(TN+FP)
+
+    Args:
+        y_true (array): The true labels.
+        y_score (array): The probability scores of the true labels.
+
+    Raises:
+        ValueError: if the shape of two arrays are not the same
+
+    Returns:
+        np.arrays: the tprs and fprs of the predictions based on different thresholds.
     """
-    y_true = np.asarray(y_true)
-    y_score = np.asarray(y_score)
+    y_true = np.asarray(y_true, dtype=float)
+    y_score = np.asarray(y_score, dtype=float)
     
     if y_true.shape != y_score.shape:
         raise ValueError("The shape of two arrays are not the same")
@@ -163,9 +210,20 @@ def roc_curve(y_true, y_score):
         else:
             fpr.append(0.0)
 
-    return np.array(tpr), np.array(fpr)
+    return np.array(tpr,dtype=float), np.array(fpr,dtype=float)
 
-def auc(tpr, fpr):
+def auc(tpr, fpr)->float:
+    """
+    Compute the area under the curve of the ROC curve.
+
+    Args:
+        tpr (array): The true positive rates.
+        fpr (array): The false positive rates.
+
+    Returns:
+        float: the area under the curve of the ROC curve.
+    """
+    
     fpr_idx = np.argsort(fpr)
     fpr_sorted = fpr[fpr_idx]
     tpr_sorted = tpr[fpr_idx]
