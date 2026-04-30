@@ -18,7 +18,7 @@ def load_csv(file_name = "student_performance_data.csv", delimiter = ",", skip= 
     return arr
 
 
-# a = load_csv()
+a = load_csv()
 # print(a)
 # print(type(a))
 # print(a.shape)
