@@ -84,8 +84,8 @@ def activations(x, method="relu", axis = None)->np.array:
     elif method == "softmax":
         max_x = np.max(x, axis=axis, keepdims=True)
         x = x - max_x # To prevent the overflow
-        return np.exp(x) / np.sum(np.exp(x, axis=axis, keepdims=True))
-    
+        return np.exp(x) / np.sum(np.exp(x), axis=axis, keepdims=True)
+
 def logsumexp(x, axis=None)->float:
     """
     Compute the log sum exponential of the input array.
@@ -120,7 +120,7 @@ def top_k(x, k)->np.array:
         np.array: The top k indices of the input array.
     """
     
-    x = np.asarray(x,dype=float)
+    x = np.asarray(x,dtype=float)
     
     if x.size == 0:
         raise ValueError("The input array is empty")
