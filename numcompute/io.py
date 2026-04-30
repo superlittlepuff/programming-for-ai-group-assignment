@@ -17,8 +17,9 @@ def load_csv(file_name = "student_performance_data.csv", delimiter = ",", skip= 
         raise ValueError("Empty csv file")
     return arr
 
-
-a = load_csv()
+if __name__ == "__main__":
+    a = load_csv()
+    print("Successfully loaded data for manual testing.")
 # print(a)
 # print(type(a))
 # print(a.shape)
