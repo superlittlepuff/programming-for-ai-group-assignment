@@ -1,8 +1,8 @@
 import unittest
 import numpy as np
 import os
-from data_io import load_csv
-from preprocessing import StandardScaler, SimpleImputer, OneHotEncoder
+from numcompute.data_io import load_csv
+from numcompute.preprocessing import StandardScaler, SimpleImputer, OneHotEncoder
 
 class TestNumCompute(unittest.TestCase):
     # --- 1. Data IO test (Load CSV) ---
