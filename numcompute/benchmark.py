@@ -1,6 +1,6 @@
 import numpy as np
 import time
-from preprocessing import StandardScaler, SimpleImputer
+from numcompute.preprocessing import StandardScaler, SimpleImputer
 
 def benchmark_scaler():
     print("Testing StandardScaler with 100000 rows")

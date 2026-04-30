@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "numcompute"
+version = "1.0.0"
+description = "A modular scientific computing toolkit using NumPy"
+authors = [{name = "Your Team Name"}]
+dependencies = ["numpy"]
