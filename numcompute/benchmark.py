@@ -1,5 +1,9 @@
 import numpy as np
 import time
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from numcompute.preprocessing import StandardScaler, SimpleImputer
 
 def benchmark_scaler():
