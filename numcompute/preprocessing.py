@@ -1,6 +1,24 @@
 import numpy as np
 
 class StandardScaler:
+     """
+    Standardize numerical features using z-score normalization.
+
+    This transformer computes the mean and standard deviation of each
+    feature during ``fit`` and applies feature-wise standardization during
+    ``transform``.
+
+    Attributes
+    ----------
+    mean_ : np.ndarray or None
+        Per-feature mean learned during fitting.
+    scale_ : np.ndarray or None
+        Per-feature standard deviation learned during fitting.
+    n_features_in_ : int or None
+        Number of input features seen during fitting.
+    _is_fitted : bool
+        Whether the transformer has been fitted.
+    """
     def __init__(self):
         self.mean_ = None
         self.scale_ = None
@@ -49,6 +67,25 @@ class StandardScaler:
         return self.fit(X).transform(X)
 
 class MinMaxScaler:
+    """
+    Scale numerical features to the [0, 1] range.
+
+    This transformer computes the minimum and maximum value of each feature
+    during ``fit`` and applies min-max scaling during ``transform``.
+
+    Attributes
+    ----------
+    max_ : np.ndarray or None
+        Per-feature maximum values.
+    min_ : np.ndarray or None
+        Per-feature minimum values.
+    range_ : np.ndarray or None
+        Per-feature ranges (max - min), adjusted to avoid division by zero.
+    n_features_in_ : int or None
+        Number of input features seen during fitting.
+    _is_fitted : bool
+        Whether the transformer has been fitted.
+    """
     def __init__(self):
         self.max_ = None
         self.min_ = None
@@ -97,6 +134,22 @@ class MinMaxScaler:
         return self.fit(X).transform(X)
 
 class OneHotEncoder:
+    """
+    Encode categorical features as one-hot numeric arrays.
+
+    During ``fit``, the encoder stores the unique categories observed in
+    each categorical feature column. During ``transform``, each category is
+    mapped to a binary indicator vector.
+
+    Attributes
+    ----------
+    categories_ : list of np.ndarray or None
+        Unique categories for each input feature column.
+    n_features_in_ : int or None
+        Number of categorical feature columns seen during fitting.
+    _is_fitted : bool
+        Whether the encoder has been fitted.
+    """
     def __init__(self):
         self.categories_ = None
         self.n_features_in_ = None
@@ -159,6 +212,25 @@ class OneHotEncoder:
         return self.fit(X).transform(X)
 
 class SimpleImputer:
+    """
+    Replace missing values with a constant fill value.
+
+    The current implementation supports constant-value imputation for
+    numeric arrays containing ``np.nan``.
+
+    Attributes
+    ----------
+    strategy : str
+        Imputation strategy. Currently intended for constant filling.
+    fill_value : float or int
+        Constant value used to replace missing entries.
+    n_features_in_ : int or None
+        Number of input features seen during fitting.
+    _is_fitted : bool
+        Whether the imputer has been fitted.
+    statistics_ : scalar or None
+        Stored fill value used during transformation.
+    """
     def __init__(self, strategy="constant", fill_value=0):
         self.strategy = strategy
         self.fill_value = fill_value
