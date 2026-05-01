@@ -65,18 +65,35 @@ The toolkit is verified through 33 automated unit tests to ensure exceptional ro
 
 ## 4. Pipeline
 
-#```markdown
-## Pipeline Integration
+The `Pipeline` module provides a simple way to chain multiple transformers into a single workflow. Each step follows the shared API used in this toolkit, allowing the output of one step to be passed directly into the next one.
 
-The `Pipeline` module provides a simple way to chain multiple transformers into a single workflow. Each step follows the shared `fit/transform` API, which allows the output of one transformer to be passed directly into the next one.
+The pipeline supports two kinds of components:
 
-For example, a pipeline can first fill missing values with `SimpleImputer`, then normalize numeric features with `StandardScaler`, and finally return the transformed result in a single reusable object.
+- **Preprocessors**: `fit`, `transform`
+- **Models**: `fit`, `predict` *(no ML model implementation required)*
 
-This design reduces manual preprocessing errors in two main ways:
+For example, a pipeline can first fill missing values with `SimpleImputer`, then normalize numeric features with `StandardScaler`, and finally return the transformed result in a single reusable object. If the final step is a model-like component, the same pipeline structure can also support `fit(X, y)` and `predict(X)`.
+
+This design reduces manual preprocessing errors in several ways:
 - it enforces a consistent order of operations
 - it avoids repeatedly handling intermediate arrays by hand
+- it keeps preprocessing and prediction logic in one reusable workflow
+- it helps maintain consistency between training-time and inference-time transformations
 
 As a result, the workflow becomes easier to reuse, easier to debug, and more consistent across experiments.
+
+### Example: preprocessing-only pipeline
+
+#```python
+from numcompute.pipeline import Pipeline
+from numcompute.preprocessing import SimpleImputer, StandardScaler
+
+pipe = Pipeline([
+    ("imputer", SimpleImputer(strategy="constant", fill_value=0)),
+    ("scaler", StandardScaler())
+])
+
+X_tr = pipe.fit_transform(X)
 
 ---
 
