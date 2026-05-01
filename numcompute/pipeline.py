@@ -2,8 +2,16 @@ import numpy as np
 
 class Pipeline:
     """
-    Modular pipeline to chain multiple transformers.
-    Supports fit, transform, and fit_transform semantics.
+    Chain multiple transformers into a single reusable workflow.
+
+    Each step is expected to be a ``(name, transformer)`` pair. A transformer
+    should provide ``fit`` and/or ``transform`` methods following the
+    fit/transform API used across the NumCompute toolkit.
+
+    Attributes
+    ----------
+    steps : list of tuple[str, object]
+        Sequence of named transformer steps applied in order.
     """
     def __init__(self, steps):
         self.steps = steps
