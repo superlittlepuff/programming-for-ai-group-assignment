@@ -1,6 +1,13 @@
 import numpy as np
 
 class Rank:
+    """
+    Ranking and percentile utilities for one-dimensional numeric arrays.
+
+    This class provides ranking methods with different tie-handling
+    strategies as well as percentile estimation.
+    """
+
     def rank(data: np.ndarray, method='average'):
         data = np.asarray(data)
         if method == 'average':
