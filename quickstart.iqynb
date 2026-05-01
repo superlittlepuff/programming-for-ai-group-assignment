@@ -1,0 +1,142 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": "# NumCompute Quickstart\n\nThis notebook demonstrates a lightweight end-to-end workflow for the current `RY` branch implementation of `NumCompute`.\n\nIt focuses on:\n\n- loading CSV data with `load_csv`\n- handling missing values with `SimpleImputer`\n- scaling numeric data with `StandardScaler` and `MinMaxScaler`\n- encoding categorical data with `OneHotEncoder`\n- chaining preprocessing steps with `Pipeline`\n- using the current `Pipeline.predict()` interface with a simple model-like step"
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": "## 1. Setup imports\n\nThe cell below makes sure the repository root is on `sys.path`, so the notebook can be run either from the project root or from a `demo/` folder."
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": "import sys\nfrom pathlib import Path\nimport numpy as np\n\n# Make the repository root importable\ncwd = Path.cwd()\ncandidate_paths = [cwd, cwd.parent]\nfor p in candidate_paths:\n    if (p / \"numcompute\").exists():\n        if str(p) not in sys.path:\n            sys.path.insert(0, str(p))\n        repo_root = p\n        break\nelse:\n    raise FileNotFoundError(\"Could not find the repository root containing the 'numcompute' package.\")\n\nprint(\"Repository root:\", repo_root)"
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": "from numcompute.io import load_csv\nfrom numcompute.preprocessing import SimpleImputer, StandardScaler, MinMaxScaler, OneHotEncoder\nfrom numcompute.pipeline import Pipeline"
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": "## 2. Load raw data"
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": "data_path = repo_root / \"student_performance_data.csv\"\nX_raw = load_csv(str(data_path), delimiter=\",\", skip=1)\n\nprint(\"Raw loaded array:\")\nprint(X_raw)\nprint()\nprint(\"Type:\", type(X_raw))\nprint(\"Shape:\", X_raw.shape)"
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": "## 3. Create a small numeric example with missing values\n\nThis keeps the quickstart simple and directly demonstrates how the preprocessing classes behave."
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": "X_numeric = np.array([\n    [20.0, np.nan, 88.0],\n    [21.0, 4.0, 91.0],\n    [19.0, 2.8, np.nan]\n], dtype=float)\n\nprint(\"Original numeric data:\")\nprint(X_numeric)"
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": "## 4. Constant imputation"
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": "imputer = SimpleImputer(strategy=\"constant\", fill_value=0)\nX_imputed = imputer.fit_transform(X_numeric)\n\nprint(\"Imputed numeric data:\")\nprint(X_imputed)"
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": "## 5. Standard scaling"
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": "scaler = StandardScaler()\nX_standard = scaler.fit_transform(X_imputed)\n\nprint(\"Standard-scaled data:\")\nprint(X_standard)\nprint()\nprint(\"Column means learned by scaler:\")\nprint(scaler.mean_)\nprint(\"Column scales learned by scaler:\")\nprint(scaler.scale_)"
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": "## 6. Min-max scaling"
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": "minmax = MinMaxScaler()\nX_minmax = minmax.fit_transform(X_imputed)\n\nprint(\"Min-max scaled data:\")\nprint(X_minmax)\nprint()\nprint(\"Per-feature minimums:\")\nprint(minmax.min_)\nprint(\"Per-feature maximums:\")\nprint(minmax.max_)"
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": "## 7. One-hot encoding for categorical features"
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": "X_categorical = np.array([\n    [\"CS\", \"Online\"],\n    [\"Math\", \"Offline\"],\n    [\"CS\", \"Offline\"],\n    [\"Physics\", \"Online\"]\n], dtype=object)\n\nencoder = OneHotEncoder()\nX_encoded = encoder.fit_transform(X_categorical)\n\nprint(\"Original categorical data:\")\nprint(X_categorical)\nprint()\nprint(\"Learned categories:\")\nprint(encoder.categories_)\nprint()\nprint(\"One-hot encoded data:\")\nprint(X_encoded)"
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": "## 8. Use `Pipeline` for preprocessing\n\nThe current `Pipeline` implementation supports `fit`, `transform`, and `fit_transform`, so it can chain multiple preprocessors into one reusable workflow."
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": "preprocess_pipe = Pipeline([\n    (\"imputer\", SimpleImputer(strategy=\"constant\", fill_value=0)),\n    (\"scaler\", StandardScaler())\n])\n\nX_processed = preprocess_pipe.fit_transform(X_numeric)\n\nprint(\"Pipeline output:\")\nprint(X_processed)"
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": "## 9. Use `Pipeline.predict()` with a simple model-like step\n\nIn the current version of `pipeline.py`, the final step can provide `predict()`.  \nTo match the current implementation, the model-like object below uses `fit(X)` without a `y` argument."
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": "class DummyThresholdModel:\n    def __init__(self, threshold=0.0):\n        self.threshold = threshold\n        self._is_fitted = False\n\n    def fit(self, X):\n        X = np.asarray(X, dtype=float)\n        # A simple fitted statistic from transformed data\n        self.reference_ = np.mean(X[:, -1])\n        self._is_fitted = True\n        return self\n\n    def predict(self, X):\n        if not self._is_fitted:\n            raise ValueError(\"DummyThresholdModel has not been fitted yet.\")\n        X = np.asarray(X, dtype=float)\n        return (X[:, -1] >= self.reference_).astype(int)\n\nmodel_pipe = Pipeline([\n    (\"imputer\", SimpleImputer(strategy=\"constant\", fill_value=0)),\n    (\"scaler\", StandardScaler()),\n    (\"model\", DummyThresholdModel())\n])\n\nmodel_pipe.fit(X_numeric)\ny_pred = model_pipe.predict(X_numeric)\n\nprint(\"Predicted labels:\")\nprint(y_pred)"
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": "## 10. Summary\n\nThis quickstart demonstrated the current branch workflow:\n\n- `load_csv` loads raw delimited data into NumPy arrays\n- `SimpleImputer` fills missing values\n- `StandardScaler` and `MinMaxScaler` normalize numeric features\n- `OneHotEncoder` converts categorical columns into binary features\n- `Pipeline` chains preprocessing steps together\n- `Pipeline.predict()` can be used when the final step provides a `predict` method"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "name": "python",
+      "version": "3.x"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
