@@ -1,7 +1,7 @@
 import numpy as np
 
 class StandardScaler:
-     """
+    """
     Standardize numerical features using z-score normalization.
 
     This transformer computes the mean and standard deviation of each
@@ -27,7 +27,6 @@ class StandardScaler:
 
     def fit(self, X):
         X = np.asarray(X, dtype=float)
-
 
         if X.ndim != 2:
             raise ValueError("The dimension of X should be 2")
