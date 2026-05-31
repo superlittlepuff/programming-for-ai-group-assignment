@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from numcompute.metrics import accuracy,precision,recall,f1,confusion_matrix,mse,roc_curve
+from numcompute_stream.metrics import accuracy,precision,recall,f1,confusion_matrix,mse,roc_curve
 
 class MetricsTest(unittest.TestCase):
     def test_distance_wrong_shape(self):

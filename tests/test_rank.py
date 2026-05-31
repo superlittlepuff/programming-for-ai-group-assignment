@@ -4,7 +4,7 @@ import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from numcompute.rank import Rank
+from numcompute_stream.rank import Rank
 
 class TestRank(unittest.TestCase):
     """Tests for Rank.rank."""

@@ -1,5 +1,5 @@
 import numpy as np
-from numcompute.utils import distances, sigmoid, activations,logsumexp,top_k,batching
+from numcompute_stream.utils import distances, sigmoid, activations,logsumexp,top_k,batching
 import unittest
 
 class UtilsTest(unittest.TestCase):

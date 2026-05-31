@@ -4,7 +4,7 @@ import sys, os
  
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
  
-from numcompute.sort_search import SortSearch
+from numcompute_stream.sort_search import SortSearch
 
 class TestStableSort(unittest.TestCase):
     def test_basic_1d(self):

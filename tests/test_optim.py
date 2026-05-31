@@ -1,6 +1,6 @@
 import numpy as np
 import unittest
-from numcompute.optim import grad, jacobian
+from numcompute_stream.optim import grad, jacobian
 
 class OptimTest(unittest.TestCase):
     def test_grad_wrong_method(self):
